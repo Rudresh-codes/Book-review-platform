@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const reviewSchema = new mongoose.Schema({
   userId: { type: String, required: true },    // links to User.id
+  userName: { type: String},    // links to User.name
   rating: { type: Number, min: 1, max: 5, required: true },
   text: { type: String, required: true },
   date: { type: Date, default: Date.now }

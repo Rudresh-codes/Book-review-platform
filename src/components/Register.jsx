@@ -1,0 +1,161 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Mail, Lock, Book, User, ArrowRight, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+
+const Signup = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+const handleSignup = async () => {
+  setError("");
+
+  if (!email || !password || !name || !confirmPassword) {
+    setError("Please fill in all fields");
+    return;
+  }
+  if (password !== confirmPassword) {
+    setError("Passwords do not match");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, name })  // ✅ send correct password
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Signup failed");
+    }
+    // If your backend sends a token on register, store it
+
+    setIsSuccess(true);
+    setIsLoading(false);
+    console.log("Signup success:", data);
+    alert("Signup successful! Please login to continue.");
+    
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
+
+  } catch (err) {
+    setIsLoading(false);
+    setError(err.message);
+    console.error("Signup error:", err);
+  }
+};
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="relative z-10 w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mb-4">
+            <Book className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Join BookVerse</h1>
+          <p className="text-gray-400">Create your account</p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
+          {isSuccess && (
+            <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-lg flex items-center space-x-3">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <span className="text-green-300">Account created!</span>
+            </div>
+          )}
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center space-x-3">
+              <AlertCircle className="w-5 h-5 text-red-400" />
+              <span className="text-red-300 text-sm">{error}</span>
+            </div>
+          )}
+
+          <div className="space-y-6">
+            {/* Full Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400"
+                  placeholder="Enter your full name"
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400"
+                  placeholder="Enter your email"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400"
+                  placeholder="Enter your password"
+                />
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400"
+                  placeholder="Confirm your password"
+                />
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              onClick={handleSignup}
+              disabled={isLoading || isSuccess}
+              className="w-full py-3 px-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-semibold text-white flex items-center justify-center"
+            >
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><span>Create Account</span><ArrowRight className="ml-2 w-5 h-5" /></>}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Signup;

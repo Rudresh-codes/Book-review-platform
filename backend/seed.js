@@ -8,12 +8,13 @@ const seed = async () => {
   try {
     await connectDB();
 
-    // Clear existing data
+    // Clear old data
     await User.deleteMany();
     await Book.deleteMany();
 
     // Create sample users
     const users = await User.insertMany([
+      { name: "Admin", email: "admin@example.com", password: "admin123", isAdmin: true },
       { name: "Sarah M.", email: "sarah@example.com", password: "password123" },
       { name: "Mike R.", email: "mike@example.com", password: "password123" },
       { name: "Emma L.", email: "emma@example.com", password: "password123" }
@@ -26,15 +27,31 @@ const seed = async () => {
       {
         title: "The Seven Husbands of Evelyn Hugo",
         author: "Taylor Jenkins Reid",
-        description: "Hollywood icon Evelyn Hugo tells the story of her scandalous life.",
+        description:
+          "Hollywood icon Evelyn Hugo tells the story of her scandalous life.",
         genre: "Fiction",
         publishYear: 2017,
         pages: 400,
         tags: ["Romance", "Historical Fiction", "LGBTQ+"],
         reviews: [
-          { userId: users[0].id, rating: 5, text: "Absolutely captivating!" },
-          { userId: users[1].id, rating: 5, text: "Unforgettable." },
-          { userId: users[2].id, rating: 4, text: "Great storytelling." }
+          {
+            userId: users[1].id,
+            userName: users[1].name,
+            rating: 5,
+            text: "Absolutely captivating!"
+          },
+          {
+            userId: users[2].id,
+            userName: users[2].name,
+            rating: 5,
+            text: "Unforgettable."
+          },
+          {
+            userId: users[3].id,
+            userName: users[3].name,
+            rating: 4,
+            text: "Great storytelling."
+          }
         ]
       },
       {
@@ -46,13 +63,23 @@ const seed = async () => {
         pages: 464,
         tags: ["Software", "Best Practices"],
         reviews: [
-          { userId: users[0].id, rating: 5, text: "Must-read for devs." },
-          { userId: users[1].id, rating: 4, text: "Dense but worth it." }
+          {
+            userId: users[1].id,
+            userName: users[1].name,
+            rating: 5,
+            text: "Must-read for devs."
+          },
+          {
+            userId: users[2].id,
+            userName: users[2].name,
+            rating: 4,
+            text: "Dense but worth it."
+          }
         ]
       }
     ];
 
-    // Insert books
+    // Insert books with updated stats
     for (const bookData of books) {
       const book = new Book(bookData);
       book.updateReviewStats();

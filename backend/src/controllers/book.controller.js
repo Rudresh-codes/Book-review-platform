@@ -56,12 +56,13 @@ export const addReview = async (req, res) => {
     const { id } = req.params; // bookId from URL
     const { rating, text } = req.body;
     const userId = req.user.id; // from JWT
+    const userName = req.user.name; // from JWT
 
     const book = await Book.findOne({ id });
     if (!book) return res.status(404).json({ message: "Book not found" });
 
     // Add review
-    book.reviews.push({ userId, rating, text });
+    book.reviews.push({ userId, userName, rating, text });
     book.updateReviewStats();
     await book.save();
 

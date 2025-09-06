@@ -1,53 +1,26 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 function Book() {
   const { bookid } = useParams();
+  const [bookData, setbookData] = useState([])
+  const [reviews, setReviews] = useState([]);
 
-  // Sample data (you’d normally fetch this from an API or DB)
-  const bookData = [
-    {
-      id: "1",
-      title: "The Seven Husbands of Evelyn Hugo",
-      author: "Taylor Jenkins Reid",
-      rating: 4.8,
-      reviewCount: 45623,
-      genre: "Fiction",
-      pages: 400,
-      publishYear: 2017,
-      description:
-        "Aging and reclusive Hollywood movie icon Evelyn Hugo is finally ready to tell the truth about her glamorous and scandalous life. But when she chooses unknown magazine reporter Monique Grant for the job, no one is more astounded than Monique herself. Why her? Why now?",
-      coverColor: "from-pink-400 to-rose-500",
-      tags: ["Romance", "Historical Fiction", "LGBTQ+"],
-      reviews: [
-        {
-          user: "Sarah M.",
-          rating: 5,
-          text: "Absolutely captivating! One of the best books I've read this year.",
-          date: "2024-11-15",
-        },
-        {
-          user: "Mike R.",
-          rating: 5,
-          text: "The character development is incredible. Evelyn Hugo is unforgettable.",
-          date: "2024-10-28",
-        },
-        {
-          user: "Emma L.",
-          rating: 4,
-          text: "Great storytelling, though the ending felt a bit rushed.",
-          date: "2024-12-03",
-        },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const options = { method: 'GET' };
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/books/${bookid}`, options)
+      .then(response => response.json())
+      .then(response => {
+        setbookData([response]);
+        setReviews(response.reviews || []);
+      })
+      .catch(err => console.error(err));
+  }, [])
 
   const book = bookData.find((b) => b.id === bookid);
-
-  const [reviews, setReviews] = useState(book ? book.reviews : []);
   const [newReview, setNewReview] = useState({
-    user: "",
     rating: 0,
     text: "",
   });
@@ -56,23 +29,45 @@ function Book() {
 
   const handleReviewSubmit = (e) => {
     e.preventDefault();
-    if (!newReview.user || !newReview.text || newReview.rating === 0) {
+
+    const token = localStorage.getItem("token");
+    if (!token){
+      alert("Please login to submit a review.");
+      setNewReview({ rating: 0, text: "" });
+      return;
+    }
+    if (!newReview.text || newReview.rating === 0) {
       alert("Please fill all fields.");
       return;
     }
+
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token
+      },
+      body: newReview ? JSON.stringify(newReview) : null
+    };
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/books/${bookid}/review`, options)
+      .then(response => response.json())
+      .then(response => console.log(response))
+      .catch(err => console.error(err));
+
     const reviewWithDate = {
       ...newReview,
-      date: new Date().toISOString().split("T")[0],
     };
     setReviews([reviewWithDate, ...reviews]);
-    setNewReview({ user: "", rating: 0, text: "" });
+    setNewReview({ rating: 0, text: "" });
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Book Header */}
       <div
-        className={`p-6 rounded-2xl bg-gradient-to-r ${book.coverColor} text-white`}
+        className={`p-6 rounded-2xl bg-gradient-to-r`}
       >
         <h1 className="text-4xl font-bold">{book.title}</h1>
         <p className="mt-2 text-xl">by {book.author}</p>
@@ -92,7 +87,7 @@ function Book() {
       </div>
 
       {/* Book Details */}
-      <div className="mt-6 bg-gray-100 p-6 rounded-xl text-gray-800">
+      <div className="mt-6 bg-gray-100 p-6 rounded-xl">
         <p>
           <strong>Genre:</strong> {book.genre}
         </p>
@@ -117,7 +112,7 @@ function Book() {
               className="mb-4 p-4 border rounded-lg bg-gray-50 shadow-sm"
             >
               <p className="font-semibold">
-                {rev.user} - ⭐ {rev.rating}
+                {rev.userName} - ⭐ {rev.rating}
               </p>
               <p>{rev.text}</p>
               <p className="text-sm text-gray-500">{rev.date}</p>
@@ -130,15 +125,6 @@ function Book() {
       <div className="mt-8 bg-white p-6 shadow rounded-lg">
         <h3 className="text-xl font-semibold mb-4">Add a Review</h3>
         <form onSubmit={handleReviewSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Your name"
-            value={newReview.user}
-            onChange={(e) =>
-              setNewReview({ ...newReview, user: e.target.value })
-            }
-            className="w-full p-2 border rounded"
-          />
           <select
             value={newReview.rating}
             onChange={(e) =>
