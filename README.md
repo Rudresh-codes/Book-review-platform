@@ -2,8 +2,7 @@
 
 A full-stack MERN application where users can explore books, add reviews, and manage content with role-based access (admin vs normal users).
 
-🚀 Live Demo: [https://your-frontend.vercel.app](https://your-frontend.vercel.app)
-🌐 API: [https://your-backend.vercel.app/api](https://your-backend.vercel.app/api)
+🚀 Live Demo: [https://book-review-platform-one-peach.vercel.app](https://book-review-platform-one-peach.vercel.app)
 
 ---
 
