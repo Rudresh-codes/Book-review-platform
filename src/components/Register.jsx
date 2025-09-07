@@ -43,9 +43,9 @@ const handleSignup = async () => {
     setIsSuccess(true);
     setIsLoading(false);
     console.log("Signup success:", data);
-    alert("Signup successful! Please login to continue.");
     
     setTimeout(() => {
+        alert("Signup successful! Please login to continue.");
       navigate("/login");
     }, 1000);
 
@@ -151,6 +151,10 @@ const handleSignup = async () => {
             >
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><span>Create Account</span><ArrowRight className="ml-2 w-5 h-5" /></>}
             </button>
+
+            <div className="text-center text-gray-400">
+                Already have an account? <a href="/login" className="text-purple-400 hover:underline">Sign In</a>
+            </div>
           </div>
         </div>
       </div>

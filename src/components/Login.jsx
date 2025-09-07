@@ -39,10 +39,10 @@ const Login = () => {
             localStorage.setItem("token", data.token);
             
             setIsSuccess(true);
-            alert("Login successful! Welcome to BookVerse!");
             setIsLoading(false);
             setTimeout(() => {
-                navigate("/login");
+                alert("Login successful! Welcome to BookVerse!");
+                navigate("/books");
             }, 1000);
 
         } catch (err) {
@@ -123,6 +123,10 @@ const Login = () => {
                         >
                             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><span>Sign In</span><ArrowRight className="ml-2 w-5 h-5" /></>}
                         </button>
+
+                        <div className="text-center text-gray-400">
+                            Don't have an account? <a href="/register" className="text-purple-400 hover:underline">Sign Up</a>  
+                        </div>
                     </div>
                 </div>
             </div>

@@ -9,6 +9,7 @@ import Home from './components/Home.jsx'
 import  Book  from './components/Book.jsx'
 import Login from './components/Login.jsx'
 import Register from './components/Register.jsx'
+import AddBook from './components/AddBook.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
 import AdminRoute from './components/AdminRoute.jsx'
 
@@ -25,7 +26,7 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<AdminRoute />}>
-        <Route path="add-book" element={<div className="p-6 text-white">Add Book Page</div>} />
+        <Route path="add-book" element={<AddBook/>} />
       </Route>
     </Route>
   )
